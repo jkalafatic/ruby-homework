@@ -42,12 +42,12 @@ def add_employee(employees)
   print "Is the person [e]mployee, [p]rogrammer or an [o]ffice menager? "
   role = gets.chomp.downcase
   case role
-  when role='e' then
+  when 'e' then
     employees<<Employee.new(full_name, id)
-  when role='o' then
+  when 'o' then
     print "Office: "
     employees<<OfficeManager.new(full_name, id, gets.chomp)
-  when role='p'
+  when 'p'
     print "Programming languages: "
     employees<<Programmer.new(full_name, id, gets.chomp)
   else
@@ -60,19 +60,8 @@ def view_employees(employees)
   print "Sort by [f]isrt name or [l]ast name: "
   sort=gets.chomp
   
-  case sort
-    when 'l' then 
-      sorted_employees_l(employees).each do |employee|
-        print "#{employee.full_name}, #{employee.id}"
-        case employee
-        when OfficeManager then print " (#{employee.office})\n"
-        when Programmer then print " [#{employee.languages}]\n"
-        else
-          print "\n"
-        end
-      end
-    when 'f' then 
-      sorted_employees_f(employees).each do |employee|
+    if sort== 'l' || sort=='f'then 
+      sorted_employees(employees, sort).each do |employee|
         print "#{employee.full_name}, #{employee.id}"
         case employee
         when OfficeManager then print " (#{employee.office})\n"
@@ -94,32 +83,42 @@ def edit_employees(employees)
   id = gets.chomp
   target=nil
 
-  employees.each do |employee|
-    if employee.id == id
-      target=employee
-      break
-    end
-  end
+target=employees.find{|e| e.id == id}
+
   
   puts "Curent full name: #{target.full_name}"
   print "New full name: "
   target.full_name= gets.chomp
   puts "Current ID: #{target.id}"
-   print "New ID: "
+  print "New ID: "
   target.id= gets.chomp
+
+  case target
+  when Programmer then
+    print"Input programing languages:"
+    target.languages=gets.chomp
+  when OfficeManager then
+    print"Input new office: "
+    target.office=gets.chomp
+  end
 
 end
 
-def sorted_employees_l(employees)
+def sorted_employees(employees, direction)
+
+  if(direction=='l') then
   employees.sort_by do |employee|
     employee.full_name.split(' ', 2).last.downcase
   end
-end
 
-def sorted_employees_f(employees)
-  employees.sort_by do |employee|
+  elsif(direction=='f') then
+    employees.sort_by do |employee|
     employee.full_name.split(' ', 2).first.downcase
+   end
+ else
+  puts 'mistake!'
   end
+
 end
 
 def quit
